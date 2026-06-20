@@ -1,20 +1,23 @@
 # 🎯 Interview Preparation & Placement Tracker
 
-<div align="center">
-
+<div>
 ![Platform](https://img.shields.io/badge/Platform-Full%20Stack%20Web%20App-blue?style=for-the-badge)
-![Backend](https://img.shields.io/badge/Backend-ASP.NET%20Core%20Web%20API-512BD4?style=for-the-badge&logo=dotnet)
+
+![Backend](https://img.shields.io/badge/Backend-ASP.NET%20Core%20MVC-512BD4?style=for-the-badge&logo=dotnet)
+
 ![Frontend](https://img.shields.io/badge/Frontend-HTML%20%7C%20CSS%20%7C%20JavaScript-F7DF1E?style=for-the-badge&logo=javascript)
-![Database](https://img.shields.io/badge/Database-MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
-![EF Core](https://img.shields.io/badge/ORM-Entity%20Framework%20Core-512BD4?style=for-the-badge&logo=dotnet)
-![Editor](https://img.shields.io/badge/Code%20Editor-Monaco%20Editor-007ACC?style=for-the-badge&logo=visualstudiocode)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Active%20Development-brightgreen?style=for-the-badge)
 
-<br/>
+![Database](https://img.shields.io/badge/Database-MySQL-4479A1?style=for-the-badge&logo=mysql)
 
-> **A comprehensive full-stack placement preparation platform** that empowers students to prepare for technical interviews, apply for jobs, and complete assessments — while enabling companies to post opportunities and manage the entire recruitment lifecycle.
+![ORM](https://img.shields.io/badge/ORM-Entity%20Framework%20Core-512BD4?style=for-the-badge&logo=dotnet)
 
+![Authentication](https://img.shields.io/badge/Auth-Session%20Based-success?style=for-the-badge)
+
+![Architecture](https://img.shields.io/badge/Architecture-3%20Tier-orange?style=for-the-badge)
+
+![Version Control](https://img.shields.io/badge/Git-GitHub-black?style=for-the-badge&logo=github)
+
+![Status](https://img.shields.io/badge/Status-Completed-brightgreen?style=for-the-badge)
 </div>
 
 ---
