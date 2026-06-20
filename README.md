@@ -37,7 +37,6 @@
 - [API Endpoints](#-api-endpoints)
 - [Installation Guide](#-installation-guide)
 - [Setup Instructions](#-setup-instructions)
-- [Screenshots](#-screenshots)
 - [Future Enhancements](#-future-enhancements)
 - [Learning Outcomes](#-learning-outcomes)
 - [Author](#-author)
@@ -524,22 +523,8 @@ Admin login can be seeded directly into the Admins table in MySQL:
 INSERT INTO Admins (Name, Email, Password) VALUES ('Admin', 'admin@placement.com', 'Admin@123');
 ```
 
----
 
-## 📸 Screenshots
 
-> 🖼️ *Screenshots will be added here after final UI completion.*
-
-| Screen | Description |
-|---|---|
-| `Home Page` | Landing page with role-based navigation |
-| `Student Dashboard` | Profile overview, assessment progress, application stats |
-| `Coding Editor` | Monaco Editor with problem statement and code execution |
-| `Aptitude Test` | Timed MCQ interface with auto-submit |
-| `Company Dashboard` | Job management and applicant review panel |
-| `Admin Panel` | Platform statistics and question bank management |
-
----
 
 ## 🔮 Future Enhancements
 
