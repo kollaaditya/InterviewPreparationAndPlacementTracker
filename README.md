@@ -1,6 +1,6 @@
 # 🎯 Interview Preparation & Placement Tracker
 
-<div>
+<div align="center">
   
 ![Platform](https://img.shields.io/badge/Platform-Full%20Stack%20Web%20App-blue?style=for-the-badge)
 
@@ -19,6 +19,8 @@
 ![Version Control](https://img.shields.io/badge/Git-GitHub-black?style=for-the-badge&logo=github)
 
 ![Status](https://img.shields.io/badge/Status-Completed-brightgreen?style=for-the-badge)
+
+<br/>
 </div>
 
 ---
