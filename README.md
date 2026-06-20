@@ -1,6 +1,7 @@
 # 🎯 Interview Preparation & Placement Tracker
 
 <div>
+  
 ![Platform](https://img.shields.io/badge/Platform-Full%20Stack%20Web%20App-blue?style=for-the-badge)
 
 ![Backend](https://img.shields.io/badge/Backend-ASP.NET%20Core%20MVC-512BD4?style=for-the-badge&logo=dotnet)
