@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Poppins',sans-serif;
+        }
+
+        body{
+            background:#f4f7fc;
+            min-height:100vh;
+        }
+
+        .navbar{
+            background:linear-gradient(90deg,#1e293b,#374151);
+            color:white;
+            padding:18px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+
+        .navbar span{
+            font-size:20px;
+            font-weight:700;
+        }
+
+        .navbar-right{
+            display:flex;
+            align-items:center;
+            gap:15px;
+        }
+
+        .user-name{
+            font-size:14px;
+        }
+
+        .logout-btn{
+            padding:8px 18px;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            background:white;
+            color:#1e293b;
+            font-weight:600;
+        }
+
+        .container{
+            width:90%;
+            margin:40px auto;
+        }
+
+        .welcome{
+            text-align:center;
+            font-size:28px;
+            font-weight:600;
+            color:#1e293b;
+            margin-bottom:40px;
+        }
+
+        .dashboard-grid{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:30px;
+            max-width:900px;
+            margin:auto;
+        }
+
+        .dashboard-card{
+            background:white;
+            border-radius:20px;
+            padding:40px;
+            text-align:center;
+            box-shadow:0 4px 20px rgba(0,0,0,0.08);
+            transition:0.3s;
+        }
+
+        .dashboard-card:hover{
+            transform:translateY(-8px);
+        }
+
+        .dashboard-card h2{
+            color:#1e293b;
+            margin-bottom:15px;
+            font-size:24px;
+        }
+
+        .dashboard-card p{
+            color:#64748b;
+            margin-bottom:20px;
+        }
+
+        .btn-manage{
+            padding:12px 25px;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+            color:white;
+            font-size:15px;
+            font-weight:600;
+            background:linear-gradient(90deg,#1e293b,#374151);
+        }
+
+        .btn-manage:hover{
+            opacity:0.9;
+        }
+
+        @media(max-width:768px){
+
+            .dashboard-grid{
+                grid-template-columns:1fr;
+            }
+
+            .navbar{
+                flex-direction:column;
+                gap:10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+
+        <span>⚙️ IPPT Admin Panel</span>
+
+        <div class="navbar-right">
+            <span id="welcomeUser"></span>
+
+            <button class="logout-btn" onclick="logout()">
+                Logout
+            </button>
+        </div>
+
+    </div>
+
+    <div class="container">
+
+        <h1 class="welcome" id="welcomeMsg">
+            Welcome Admin
+        </h1>
+
+        <div class="dashboard-grid">
+
+            <div class="dashboard-card">
+
+                <h2>👨‍🎓 Manage Students</h2>
+
+                <p>
+                    View, Search, Update and Delete
+                    Student Records.
+                </p>
+
+                <button class="btn-manage"
+                        onclick="location.href='studentmanage.html'">
+                    Manage Students
+                </button>
+
+            </div>
+
+            <div class="dashboard-card">
+
+                <h2>🏢 Manage Companies</h2>
+
+                <p>
+                    View, Search, Update and Delete
+                    Company Records.
+                </p>
+
+                <button class="btn-manage"
+                        onclick="location.href='companymanage.html'">
+                    Manage Companies
+                </button>
+
+            </div>
+
+            <div class="dashboard-card">
+
+                <h2>💻 Coding Questions</h2>
+
+                <p>
+                    Add, View and Delete
+                    Coding Questions for Students.
+                </p>
+
+                <button class="btn-manage"
+                        onclick="location.href='adminquestions.html'">
+                    Manage Coding Qs
+                </button>
+
+            </div>
+
+            <div class="dashboard-card">
+
+                <h2>🧠 Aptitude Questions</h2>
+
+                <p>
+                    Add, View and Delete
+                    Aptitude Test Questions.
+                </p>
+
+                <button class="btn-manage"
+                        onclick="location.href='adminquestions.html'">
+                    Manage Aptitude Qs
+                </button>
+
+            </div>
+
+            <div class="dashboard-card">
+
+                <h2>🗣 Communication Qs</h2>
+
+                <p>
+                    Add, View and Delete
+                    Communication Test Questions.
+                </p>
+
+                <button class="btn-manage"
+                        onclick="location.href='adminquestions.html'">
+                    Manage Comm Qs
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="js/auth.js"></script>
+
+    <script>
+
+        const role =
+            sessionStorage.getItem("userRole");
+
+        const name =
+            sessionStorage.getItem("userName");
+
+        if(!name || role !== "Admin")
+        {
+            alert("Admin Access Required");
+
+            window.location.href =
+                "adminlogin.html";
+        }
+
+        document.getElementById("welcomeUser")
+            .textContent = name;
+
+        document.getElementById("welcomeMsg")
+            .textContent =
+            `Welcome, ${name}!`;
+
+    </script>
+
+</body>
+</html>

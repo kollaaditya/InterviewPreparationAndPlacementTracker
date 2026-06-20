@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Communication Test — IPPT</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;user-select:none;}
+body{background:#f5f3ff;min-height:100vh;}
+.navbar{background:linear-gradient(90deg,#7c3aed,#4f46e5);color:white;padding:0 40px;display:flex;justify-content:space-between;align-items:center;height:64px;box-shadow:0 2px 12px rgba(124,58,237,0.3);}
+.nav-brand{font-size:18px;font-weight:700;}
+.nav-right{display:flex;align-items:center;gap:14px;}
+.timer-box{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:6px 18px;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;}
+.timer-danger{background:#7f1d1d;border-color:#f87171;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.5;}}
+
+#instrScreen{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 64px);}
+.instr-card{background:white;border-radius:20px;padding:44px;max-width:640px;width:100%;box-shadow:0 4px 24px rgba(124,58,237,0.12);}
+.instr-card h2{font-size:22px;font-weight:700;color:#1e293b;margin-bottom:20px;}
+.meta-row{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+.meta-badge{background:#f5f3ff;border-radius:10px;padding:12px 20px;font-size:13px;color:#64748b;text-align:center;}
+.meta-badge strong{display:block;font-size:20px;font-weight:700;color:#7c3aed;}
+.topic-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.topic-pill{padding:5px 14px;background:#ede9fe;color:#7c3aed;border-radius:20px;font-size:12px;font-weight:600;}
+.instr-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px;}
+.instr-list li{display:flex;gap:12px;font-size:14px;color:#475569;}
+.instr-list li::before{content:"✔";color:#22c55e;font-weight:700;flex-shrink:0;}
+.btn-start{width:100%;padding:14px;background:linear-gradient(90deg,#7c3aed,#4f46e5);color:white;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;}
+
+#testScreen{display:none;}
+.test-layout{display:flex;height:calc(100vh - 64px);}
+.q-sidebar{width:220px;background:white;border-right:1px solid #e2e8f0;padding:20px 16px;overflow-y:auto;flex-shrink:0;}
+.q-sidebar h4{font-size:12px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;}
+.nav-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.nav-btn{padding:9px 4px;border:1.5px solid #e2e8f0;border-radius:8px;background:white;color:#64748b;font-size:12px;font-weight:600;cursor:pointer;text-align:center;transition:all 0.15s;}
+.nav-btn:hover{border-color:#7c3aed;color:#7c3aed;}
+.nav-current{border-color:#7c3aed;background:#f5f3ff;color:#7c3aed;}
+.nav-answered{background:#dcfce7;border-color:#22c55e;color:#166534;}
+.q-main{flex:1;padding:36px 44px;overflow-y:auto;}
+.q-progress{font-size:13px;color:#94a3b8;margin-bottom:16px;}
+.q-topic{display:inline-block;background:#ede9fe;color:#7c3aed;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:14px;}
+.q-text{font-size:17px;font-weight:600;color:#1e293b;margin-bottom:28px;line-height:1.6;}
+.q-options{display:flex;flex-direction:column;gap:12px;margin-bottom:32px;}
+.opt-label{display:flex;align-items:center;gap:14px;padding:14px 18px;border:1.5px solid #e2e8f0;border-radius:12px;cursor:pointer;transition:all 0.15s;font-size:15px;color:#374151;}
+.opt-label:hover{border-color:#7c3aed;background:#f5f3ff;}
+.opt-label.selected{border-color:#7c3aed;background:#f5f3ff;color:#7c3aed;font-weight:500;}
+.opt-label input{accent-color:#7c3aed;width:16px;height:16px;cursor:pointer;flex-shrink:0;}
+.q-nav-btns{display:flex;gap:12px;}
+.btn-nav{padding:10px 26px;border:1.5px solid #e2e8f0;border-radius:10px;background:white;color:#64748b;font-size:14px;font-weight:500;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.15s;}
+.btn-nav:hover:not(:disabled){border-color:#7c3aed;color:#7c3aed;}
+.btn-nav:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-next{border-color:#7c3aed;color:#7c3aed;}
+.btn-submit-final{padding:10px 28px;background:linear-gradient(90deg,#16a34a,#15803d);color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;}
+
+#resultScreen{display:none;align-items:center;justify-content:center;min-height:calc(100vh - 64px);}
+.result-card{background:white;border-radius:20px;padding:48px;text-align:center;max-width:520px;width:100%;box-shadow:0 4px 24px rgba(124,58,237,0.12);}
+.result-circle{width:160px;height:160px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 24px;}
+.result-score{font-size:40px;font-weight:800;color:white;line-height:1;}
+.result-pct{font-size:14px;color:rgba(255,255,255,0.85);}
+.result-card h2{font-size:22px;font-weight:700;color:#1e293b;margin-bottom:12px;}
+.result-details{display:flex;justify-content:center;gap:24px;margin:20px 0;}
+.r-item{text-align:center;}.r-val{font-size:20px;font-weight:700;color:#1e293b;}.r-lbl{font-size:12px;color:#94a3b8;}
+.btn-dash{padding:12px 32px;background:linear-gradient(90deg,#7c3aed,#4f46e5);color:white;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;margin-top:8px;}
+.btn-results{padding:12px 24px;background:white;color:#7c3aed;border:1.5px solid #7c3aed;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;margin-top:8px;margin-left:12px;}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="nav-brand">🗣 Communication Test — IPPT</div>
+    <div class="nav-right">
+        <span id="timerBox" class="timer-box">15:00</span>
+        <span id="warnBadge" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:5px 12px;font-size:13px;display:none">⚠️ <span id="warnCount">0</span>/3</span>
+    </div>
+</div>
+
+<div id="instrScreen">
+    <div class="instr-card">
+        <h2>🗣 Communication Test Instructions</h2>
+        <div class="meta-row">
+            <div class="meta-badge"><strong id="totalQMeta">—</strong>Questions</div>
+            <div class="meta-badge"><strong>15 Min</strong>Duration</div>
+            <div class="meta-badge"><strong>1 Mark</strong>Per Question</div>
+        </div>
+        <div class="topic-pills">
+            <span class="topic-pill">📝 Grammar</span>
+            <span class="topic-pill">📖 Vocabulary</span>
+            <span class="topic-pill">✏️ Sentence Correction</span>
+            <span class="topic-pill">📚 Reading Comprehension</span>
+        </div>
+        <ul class="instr-list">
+            <li>Questions cover English Grammar, Vocabulary, Sentence Correction and Reading Comprehension.</li>
+            <li>Do not refresh or close the browser during the test.</li>
+            <li>Test auto-submits when the timer expires.</li>
+            <li>Tab switching is monitored — 3 violations auto-submit the test.</li>
+            <li>Right-click, copy, paste and cut are disabled.</li>
+        </ul>
+        <button class="btn-start" id="startBtn" onclick="startTest()">✅ I Agree &amp; Start Test</button>
+    </div>
+</div>
+
+<div id="testScreen">
+    <div class="test-layout">
+        <div class="q-sidebar">
+            <h4>Navigator</h4>
+            <div class="nav-grid" id="navGrid"></div>
+        </div>
+        <div class="q-main" id="questionBox"></div>
+    </div>
+</div>
+
+<div id="resultScreen" style="display:none">
+    <div class="result-card" id="resultBox"></div>
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/assessment-utils.js"></script>
+<script>
+const studentId = requireStudentLogin();
+
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("copy",        e => e.preventDefault());
+document.addEventListener("paste",       e => e.preventDefault());
+document.addEventListener("cut",         e => e.preventDefault());
+
+let questions   = [];
+let answers     = {};
+let current     = 0;
+let timerInt    = null;
+let timeLeft    = 15 * 60;
+let warnings    = 0;
+let submitted   = false;
+let testStarted = false;
+
+async function loadQuestions() {
+    const res = await fetch(`${API}/communicationquestions`);
+    if (!res.ok) { showToast("Failed to load questions", false); return; }
+    questions = await res.json();
+    document.getElementById("totalQMeta").textContent = questions.length;
+    document.getElementById("startBtn").disabled = questions.length === 0;
+    if (questions.length === 0) document.getElementById("startBtn").textContent = "No questions available";
+}
+
+document.addEventListener("visibilitychange", () => {
+    if (!testStarted || submitted) return;
+    if (document.hidden) {
+        warnings++;
+        document.getElementById("warnCount").textContent = warnings;
+        if (warnings >= 3) autoSubmit("Auto Submitted Due To Tab Switching");
+        else alert(`⚠️ Tab Switch Detected! Warning ${warnings}/3`);
+    }
+});
+
+function startTimer() {
+    timerInt = setInterval(() => {
+        timeLeft--;
+        const m  = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+        const s  = String(timeLeft % 60).padStart(2, "0");
+        const el = document.getElementById("timerBox");
+        el.textContent = `${m}:${s}`;
+        el.className   = "timer-box" + (timeLeft <= 300 ? " timer-danger" : "");
+        if (timeLeft <= 0) autoSubmit("Time Expired");
+    }, 1000);
+}
+
+function startTest() {
+    testStarted = true;
+    document.getElementById("instrScreen").style.display = "none";
+    document.getElementById("testScreen").style.display  = "block";
+    document.getElementById("warnBadge").style.display   = "inline-flex";
+    startTimer();
+    renderQuestion();
+    renderNav();
+}
+
+function renderQuestion() {
+    const q  = questions[current];
+    const el = document.getElementById("questionBox");
+    el.innerHTML = `
+        <div class="q-progress">Question ${current + 1} of ${questions.length}</div>
+        <div class="q-topic">${q.topic}</div>
+        <div class="q-text">${q.questionText}</div>
+        <div class="q-options">
+            ${["A","B","C","D"].map(opt => `
+            <label class="opt-label ${answers[q.questionId] === opt ? 'selected' : ''}">
+                <input type="radio" name="opt" value="${opt}"
+                    ${answers[q.questionId] === opt ? 'checked' : ''}
+                    onchange="selectAnswer('${opt}')">
+                <span><strong>${opt}.</strong> ${q["option" + opt]}</span>
+            </label>`).join("")}
+        </div>
+        <div class="q-nav-btns">
+            <button class="btn-nav" onclick="go(current - 1)" ${current === 0 ? 'disabled' : ''}>◀ Previous</button>
+            ${current < questions.length - 1
+                ? `<button class="btn-nav btn-next" onclick="go(current + 1)">Next ▶</button>`
+                : `<button class="btn-submit-final" onclick="confirmSubmit()">✅ Submit Test</button>`}
+        </div>`;
+}
+
+function renderNav() {
+    document.getElementById("navGrid").innerHTML = questions.map((q, i) => `
+        <button class="nav-btn ${i === current ? 'nav-current' : ''} ${answers[q.questionId] != null ? 'nav-answered' : ''}"
+            onclick="go(${i})">${i + 1}</button>`).join("");
+}
+
+function selectAnswer(opt) {
+    answers[questions[current].questionId] = opt;
+    renderQuestion();
+    renderNav();
+}
+
+function go(idx) {
+    if (idx < 0 || idx >= questions.length) return;
+    current = idx;
+    renderQuestion();
+    renderNav();
+}
+
+function confirmSubmit() {
+    const ua = questions.filter(q => answers[q.questionId] == null).length;
+    if (ua > 0 && !confirm(`${ua} question(s) unanswered. Submit anyway?`)) return;
+    submitTest();
+}
+
+function autoSubmit(reason) {
+    if (submitted) return;
+    alert(`⏱ ${reason}. Test is being submitted.`);
+    submitTest(reason);
+}
+
+async function submitTest(reason = "Completed") {
+    if (submitted) return;
+    submitted = true;
+    clearInterval(timerInt);
+
+    const payload = {
+        studentId: parseInt(studentId),
+        answers: questions.map(q => ({
+            questionId:     q.questionId,
+            selectedOption: answers[q.questionId] || ""
+        }))
+    };
+
+    try {
+        const res  = await fetch(`${API}/communication/submit`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        showResult(data, reason);
+    } catch (e) {
+        showToast("❌ Submission failed: " + e.message, false);
+    }
+}
+
+function showResult(data, reason) {
+    document.getElementById("testScreen").style.display   = "none";
+    document.getElementById("resultScreen").style.display = "flex";
+    const pct = data.percentage || 0;
+    const bg  = pct >= 60 ? "#22c55e" : pct >= 40 ? "#f59e0b" : "#ef4444";
+    document.getElementById("resultBox").innerHTML = `
+        <div class="result-circle" style="background:${bg}">
+            <div class="result-score">${data.score}/${data.totalQuestions}</div>
+            <div class="result-pct">${pct}%</div>
+        </div>
+        <h2>${pct >= 60 ? "🎉 Excellent!" : pct >= 40 ? "👍 Good Effort!" : "📚 Keep Practicing!"}</h2>
+        <div class="result-details">
+            <div class="r-item"><div class="r-val">${data.score}</div><div class="r-lbl">Correct</div></div>
+            <div class="r-item"><div class="r-val">${data.totalQuestions - data.score}</div><div class="r-lbl">Wrong</div></div>
+            <div class="r-item"><div class="r-val">${pct}%</div><div class="r-lbl">Score</div></div>
+        </div>
+        <p style="color:#64748b;font-size:13px;margin-bottom:20px">Status: <strong>${reason}</strong> • Tab Switches: <strong>${warnings}</strong></p>
+        <button class="btn-dash"    onclick="location.href='studentdashboard.html'">🏠 Dashboard</button>
+        <button class="btn-results" onclick="location.href='communicationresults.html'">📊 View History</button>`;
+}
+
+loadQuestions();
+</script>
+</body>
+</html>

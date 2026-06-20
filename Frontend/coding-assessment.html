@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coding Assessment — IPPT</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:#0d1117;color:#e6edf3;min-height:100vh;overflow:hidden;}
+
+.navbar{background:#161b22;padding:0 24px;height:56px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #30363d;flex-shrink:0;}
+.nav-brand{font-size:17px;font-weight:700;color:#58a6ff;}
+.nav-controls{display:flex;align-items:center;gap:14px;}
+.warn-badge{background:#3d1a1a;color:#f87171;padding:4px 12px;border-radius:20px;font-size:12px;}
+.timer-display{background:#0d2137;color:#58a6ff;padding:5px 16px;border-radius:8px;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;}
+.timer-danger{background:#3d1a1a;color:#f87171;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.btn-final-submit{padding:7px 18px;background:#238636;color:white;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;}
+.btn-final-submit:hover{background:#2ea043;}
+
+/* ── Instructions ── */
+#code-instructions{display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100vh - 56px);padding:40px;}
+.instr-card{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:40px;max-width:660px;width:100%;}
+.instr-card h2{font-size:22px;color:#58a6ff;margin-bottom:20px;}
+.instr-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px;}
+.instr-list li{display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#8b949e;}
+.instr-list li::before{content:"✔";color:#3fb950;font-weight:700;flex-shrink:0;}
+.meta-row{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+.meta-badge{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:10px 18px;font-size:13px;color:#8b949e;}
+.meta-badge span{display:block;font-size:18px;font-weight:700;color:#58a6ff;}
+.btn-start{width:100%;padding:14px;background:#238636;color:white;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:background 0.2s;}
+.btn-start:hover{background:#2ea043;}
+
+/* ── Test layout ── */
+#code-test-area{display:none;height:calc(100vh - 56px);}
+.code-layout{display:flex;height:100%;}
+
+/* Question sidebar */
+.code-q-sidebar{width:220px;background:#161b22;border-right:1px solid #30363d;display:flex;flex-direction:column;flex-shrink:0;}
+.code-q-sidebar h4{font-size:12px;color:#8b949e;text-transform:uppercase;letter-spacing:.05em;padding:16px 16px 8px;}
+.code-q-list{list-style:none;flex:1;overflow-y:auto;}
+.code-q-item{padding:12px 16px;cursor:pointer;font-size:13px;color:#8b949e;border-left:3px solid transparent;transition:all 0.15s;}
+.code-q-item:hover{background:#21262d;color:#e6edf3;}
+.code-q-item.active{background:#0d2137;color:#58a6ff;border-left-color:#58a6ff;font-weight:600;}
+.qnum{color:#58a6ff;font-weight:700;margin-right:6px;}
+
+/* Problem panel */
+.problem-panel{width:340px;background:#0d1117;border-right:1px solid #30363d;overflow-y:auto;flex-shrink:0;padding:20px;}
+.p-title{font-size:18px;font-weight:700;color:#e6edf3;margin-bottom:12px;}
+.p-desc{font-size:14px;color:#8b949e;line-height:1.7;margin-bottom:20px;}
+.p-examples h5{font-size:13px;color:#58a6ff;margin-bottom:8px;}
+.example-block{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px;margin-bottom:10px;font-size:13px;}
+.ex-label{color:#3fb950;font-weight:600;}
+code{font-family:'Fira Code',monospace;color:#79c0ff;}
+
+/* Editor panel */
+.editor-panel{flex:1;display:flex;flex-direction:column;min-width:0;}
+.editor-toolbar{background:#161b22;border-bottom:1px solid #30363d;padding:8px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.lang-select{padding:6px 12px;background:#0d1117;color:#e6edf3;border:1px solid #30363d;border-radius:6px;font-size:13px;font-family:'Poppins',sans-serif;cursor:pointer;outline:none;}
+.lang-select:focus{border-color:#58a6ff;}
+.btn-run{padding:7px 18px;background:#0d2137;color:#58a6ff;border:1px solid #1f6feb;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:background 0.15s;}
+.btn-run:hover{background:#1f6feb;color:white;}
+.btn-submit-q{padding:7px 18px;background:#388bfd;color:white;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:background 0.15s;}
+.btn-submit-q:hover{background:#1f6feb;}
+
+#monaco-container{flex:1;min-height:0;}
+
+/* Output */
+.output-panel{height:180px;background:#010409;border-top:1px solid #30363d;flex-shrink:0;display:flex;flex-direction:column;}
+.output-header{padding:8px 16px;border-bottom:1px solid #30363d;font-size:12px;color:#8b949e;text-transform:uppercase;letter-spacing:.05em;}
+#code-output{flex:1;padding:12px 16px;font-family:'Fira Code',monospace;font-size:13px;color:#3fb950;white-space:pre-wrap;overflow-y:auto;}
+
+/* History */
+.history-panel{width:260px;background:#161b22;border-left:1px solid #30363d;overflow-y:auto;flex-shrink:0;padding:16px;}
+.history-panel h4{font-size:12px;color:#8b949e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;}
+.hist-item{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:10px;margin-bottom:8px;font-size:12px;}
+.hist-output{font-family:'Fira Code',monospace;font-size:11px;color:#3fb950;margin-top:6px;white-space:pre-wrap;max-height:60px;overflow-y:auto;}
+
+/* ── Result ── */
+#code-result-area{display:none;height:calc(100vh - 56px);align-items:center;justify-content:center;}
+#code-result-area.show{display:flex;}
+.result-wrap{text-align:center;padding:40px;}
+.result-circle{width:160px;height:160px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto;}
+.result-score{font-size:36px;font-weight:800;color:white;}
+.result-pct{font-size:14px;color:rgba(255,255,255,0.8);}
+.result-status,.result-warn{margin-top:10px;font-size:14px;color:#8b949e;}
+.btn-go-dash{margin-top:24px;padding:12px 32px;background:#238636;color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="nav-brand">💻 Coding Assessment — IPPT</div>
+    <div class="nav-controls">
+        <span class="warn-badge">⚠️ Warnings: <strong id="code-warn-count">0</strong>/3</span>
+        <span class="timer-display" id="code-timer">60:00</span>
+        <button class="btn-final-submit" onclick="confirmFinalSubmit()">🏁 Final Submit</button>
+    </div>
+</div>
+
+<!-- Instructions -->
+<div id="code-instructions">
+    <div class="instr-card">
+        <h2>📋 Coding Test Instructions</h2>
+        <div class="meta-row">
+            <div class="meta-badge">Duration <span>60 Min</span></div>
+            <div class="meta-badge">Questions <span>3</span></div>
+            <div class="meta-badge">Languages <span>JS / Py / Java / C++</span></div>
+        </div>
+        <ul class="instr-list">
+            <li>Read each problem statement carefully before coding.</li>
+            <li>Use Run to test your code and Submit to save your answer per question.</li>
+            <li>Click Final Submit or wait for timer to end the test.</li>
+            <li>Switching tabs is monitored — 3 violations auto-submits the test.</li>
+            <li>Do not refresh or close the browser during the test.</li>
+            <li>Test auto-submits when the timer expires.</li>
+        </ul>
+        <button class="btn-start" onclick="startCodeTest()">✅ I Agree &amp; Start Test</button>
+    </div>
+</div>
+
+<!-- Test area -->
+<div id="code-test-area">
+    <div class="code-layout">
+
+        <!-- Q list sidebar -->
+        <div class="code-q-sidebar">
+            <h4>Questions</h4>
+            <ul class="code-q-list" id="code-q-list"></ul>
+        </div>
+
+        <!-- Problem statement -->
+        <div class="problem-panel">
+            <div class="p-title" id="q-title"></div>
+            <div class="p-desc"  id="q-desc"></div>
+            <div class="p-examples">
+                <h5>Examples</h5>
+                <div id="q-examples"></div>
+            </div>
+        </div>
+
+        <!-- Editor + output -->
+        <div class="editor-panel">
+            <div class="editor-toolbar">
+                <select class="lang-select" id="lang-select" onchange="onLangChange()">
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <option value="cpp">C++</option>
+                </select>
+                <button class="btn-run"      onclick="runCode()">▶ Run Code</button>
+                <button class="btn-submit-q" onclick="submitCurrentQuestion()">✅ Submit Question</button>
+            </div>
+            <div id="monaco-container"></div>
+            <div class="output-panel">
+                <div class="output-header">Output</div>
+                <pre id="code-output"></pre>
+            </div>
+        </div>
+
+        <!-- Submission history -->
+        <div class="history-panel">
+            <h4>Submissions</h4>
+            <div id="submission-history"></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Result area -->
+<div id="code-result-area">
+    <div class="result-wrap" id="code-result-box"></div>
+</div>
+
+<!-- Monaco Editor loader -->
+<script>
+    var require = { paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs" } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+<script>
+    require(["vs/editor/editor.main"], function() {
+        // Monaco is ready; coding.js will pick it up via initMonaco()
+    });
+</script>
+<script src="js/timer.js"></script>
+<script src="js/coding.js"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aptitude Test — IPPT</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;user-select:none;}
+body{background:#0f172a;color:#e2e8f0;min-height:100vh;}
+
+/* ── Navbar ── */
+.navbar{background:#1e293b;padding:0 32px;height:60px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #334155;}
+.nav-brand{font-size:18px;font-weight:700;color:#60a5fa;}
+.nav-info{display:flex;align-items:center;gap:20px;}
+.warn-badge{background:#7f1d1d;color:#fca5a5;padding:4px 12px;border-radius:20px;font-size:13px;}
+.timer-display{background:#1e3a5f;color:#60a5fa;padding:6px 18px;border-radius:8px;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;}
+.timer-danger{background:#7f1d1d;color:#f87171;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+/* ── Instructions ── */
+#apt-instructions{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 60px);padding:40px;}
+.instr-card{background:#1e293b;border-radius:16px;padding:40px;max-width:640px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,0.4);}
+.instr-card h2{font-size:22px;color:#60a5fa;margin-bottom:20px;}
+.instr-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px;}
+.instr-list li{display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#cbd5e1;}
+.instr-list li::before{content:"✔";color:#22c55e;font-weight:700;flex-shrink:0;}
+.meta-row{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+.meta-badge{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 18px;font-size:13px;}
+.meta-badge span{display:block;font-size:18px;font-weight:700;color:#60a5fa;}
+.btn-start{width:100%;padding:14px;background:linear-gradient(90deg,#2563eb,#7c3aed);color:white;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:opacity 0.2s;}
+.btn-start:hover{opacity:0.9;}
+
+/* ── Test layout ── */
+#apt-test-area{display:none;}
+.test-layout{display:flex;height:calc(100vh - 60px);}
+
+/* Sidebar */
+.q-sidebar{width:200px;background:#1e293b;border-right:1px solid #334155;padding:20px 16px;overflow-y:auto;flex-shrink:0;}
+.q-sidebar h4{font-size:13px;color:#94a3b8;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em;}
+.nav-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.nav-btn{padding:8px 4px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#94a3b8;font-size:12px;cursor:pointer;text-align:center;transition:all 0.15s;}
+.nav-btn:hover{border-color:#60a5fa;color:#60a5fa;}
+.nav-current{border-color:#2563eb;background:#1e3a5f;color:#60a5fa;font-weight:700;}
+.nav-answered{background:#14532d;border-color:#22c55e;color:#86efac;}
+
+/* Main question area */
+.q-main{flex:1;padding:32px 40px;overflow-y:auto;}
+.q-progress{font-size:13px;color:#94a3b8;margin-bottom:16px;}
+.q-text{font-size:17px;font-weight:500;color:#f1f5f9;margin-bottom:28px;line-height:1.6;}
+.q-options{display:flex;flex-direction:column;gap:12px;margin-bottom:32px;}
+.opt-label{display:flex;align-items:center;gap:14px;padding:14px 18px;border:1.5px solid #334155;border-radius:10px;cursor:pointer;transition:all 0.15s;font-size:14px;}
+.opt-label:hover{border-color:#3b82f6;background:#1e3a5f;}
+.opt-label.selected{border-color:#2563eb;background:#1e3a5f;color:#60a5fa;}
+.opt-label input{accent-color:#2563eb;width:16px;height:16px;cursor:pointer;}
+.q-nav-btns{display:flex;gap:12px;}
+.btn-nav{padding:10px 24px;border:1.5px solid #334155;border-radius:8px;background:transparent;color:#94a3b8;font-size:14px;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.15s;}
+.btn-nav:hover:not(:disabled){border-color:#3b82f6;color:#60a5fa;}
+.btn-nav:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-next{border-color:#2563eb;color:#60a5fa;}
+.btn-submit{padding:10px 28px;background:linear-gradient(90deg,#16a34a,#15803d);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;}
+
+/* ── Result ── */
+#apt-result-area{display:none;min-height:calc(100vh - 60px);display:none;align-items:center;justify-content:center;}
+#apt-result-area.show{display:flex;}
+.result-wrap{text-align:center;padding:40px;}
+.result-circle{width:160px;height:160px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto;box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.result-score{font-size:36px;font-weight:800;color:white;}
+.result-pct{font-size:15px;color:rgba(255,255,255,0.85);}
+.result-status,.result-warn{margin-top:10px;font-size:14px;color:#94a3b8;}
+.btn-go-dash{margin-top:24px;padding:12px 32px;background:linear-gradient(90deg,#2563eb,#7c3aed);color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="nav-brand">🧠 Aptitude Test — IPPT</div>
+    <div class="nav-info">
+        <span class="warn-badge">⚠️ Warnings: <strong id="apt-warn-count">0</strong>/3</span>
+        <span class="timer-display" id="apt-timer">20:00</span>
+    </div>
+</div>
+
+<!-- Instructions -->
+<div id="apt-instructions">
+    <div class="instr-card">
+        <h2>📋 Test Instructions</h2>
+        <div class="meta-row">
+            <div class="meta-badge">Duration <span>20 Min</span></div>
+            <div class="meta-badge">Questions <span>20</span></div>
+            <div class="meta-badge">Marks <span>1 / Q</span></div>
+        </div>
+        <ul class="instr-list">
+            <li>Read all questions carefully before answering.</li>
+            <li>Do not refresh or close the browser during the test.</li>
+            <li>Test will auto-submit when the timer expires.</li>
+            <li>Switching tabs is monitored — 3 violations auto-submits the test.</li>
+            <li>Right-click, copy, paste and cut are disabled.</li>
+            <li>Multiple submissions are not allowed.</li>
+            <li>Results are saved automatically.</li>
+        </ul>
+        <button class="btn-start" onclick="startAptTest()">✅ I Agree &amp; Start Test</button>
+    </div>
+</div>
+
+<!-- Test area -->
+<div id="apt-test-area">
+    <div class="test-layout">
+        <div class="q-sidebar">
+            <h4>Questions</h4>
+            <div class="nav-grid" id="apt-nav-grid"></div>
+        </div>
+        <div class="q-main" id="apt-question-box"></div>
+    </div>
+</div>
+
+<!-- Result area -->
+<div id="apt-result-area">
+    <div class="result-wrap" id="apt-result-box"></div>
+</div>
+
+<script src="js/timer.js"></script>
+<script src="js/aptitude.js"></script>
+</body>
+</html>

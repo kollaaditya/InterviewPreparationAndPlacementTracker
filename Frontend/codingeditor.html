@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Editor — IPPT</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:#0d1117;color:#e6edf3;height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+
+/* Navbar */
+.navbar{background:#161b22;padding:0 24px;height:54px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #30363d;flex-shrink:0;}
+.nav-brand{font-size:15px;font-weight:700;color:#58a6ff;}
+.nav-right{display:flex;gap:10px;align-items:center;}
+.btn-back{padding:6px 14px;background:transparent;color:#8b949e;border:1px solid #30363d;border-radius:6px;font-size:13px;cursor:pointer;font-family:'Poppins',sans-serif;text-decoration:none;}
+.btn-back:hover{color:#e6edf3;border-color:#8b949e;}
+.btn-run{padding:7px 18px;background:#0d2137;color:#58a6ff;border:1px solid #1f6feb;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:background 0.15s;}
+.btn-run:hover{background:#1f6feb;color:white;}
+.btn-submit{padding:7px 18px;background:#238636;color:white;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:background 0.15s;}
+.btn-submit:hover{background:#2ea043;}
+.btn-submit:disabled,.btn-run:disabled{opacity:0.5;cursor:not-allowed;}
+
+/* Layout */
+.editor-layout{display:flex;flex:1;overflow:hidden;}
+
+/* Problem panel */
+.problem-panel{width:380px;background:#0d1117;border-right:1px solid #30363d;overflow-y:auto;flex-shrink:0;padding:24px;}
+.p-tag{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;color:white;margin-bottom:12px;}
+.p-easy{background:#22c55e;} .p-medium{background:#f59e0b;} .p-hard{background:#ef4444;}
+.p-title{font-size:18px;font-weight:700;color:#e6edf3;margin-bottom:14px;line-height:1.4;}
+.section-label{font-size:12px;font-weight:600;color:#58a6ff;text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px;}
+.p-desc{font-size:14px;color:#8b949e;line-height:1.7;}
+.example-block{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px;margin-bottom:10px;}
+.example-block code{font-family:'Fira Code',monospace;font-size:13px;color:#79c0ff;display:block;margin-top:4px;}
+.ex-label{font-size:12px;color:#3fb950;font-weight:600;}
+
+/* Editor area */
+.editor-area{flex:1;display:flex;flex-direction:column;min-width:0;}
+.editor-toolbar{background:#161b22;border-bottom:1px solid #30363d;padding:8px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.lang-select{padding:6px 12px;background:#0d1117;color:#e6edf3;border:1px solid #30363d;border-radius:6px;font-size:13px;font-family:'Poppins',sans-serif;cursor:pointer;outline:none;}
+.lang-select:focus{border-color:#58a6ff;}
+#monaco-container{flex:1;}
+
+/* Output */
+.output-panel{height:190px;background:#010409;border-top:1px solid #30363d;flex-shrink:0;display:flex;flex-direction:column;}
+.output-header{padding:8px 16px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;}
+.output-title{font-size:12px;color:#8b949e;text-transform:uppercase;letter-spacing:.05em;}
+.status-pill{padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;color:white;}
+#outputText{flex:1;padding:12px 16px;font-family:'Fira Code',monospace;font-size:13px;color:#3fb950;white-space:pre-wrap;overflow-y:auto;line-height:1.6;}
+
+/* Submissions history panel */
+.history-panel{width:260px;background:#161b22;border-left:1px solid #30363d;overflow-y:auto;flex-shrink:0;padding:14px;}
+.history-panel h4{font-size:12px;color:#8b949e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;}
+.hist-item{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:10px;margin-bottom:8px;font-size:12px;}
+.hist-item .h-lang{color:#79c0ff;font-weight:600;}
+.hist-item .h-time{color:#8b949e;margin-top:2px;}
+.hist-item .h-out{font-family:'Fira Code',monospace;font-size:11px;color:#3fb950;margin-top:6px;white-space:pre-wrap;max-height:50px;overflow:hidden;}
+.view-all-link{display:block;text-align:center;color:#58a6ff;font-size:12px;margin-top:8px;text-decoration:none;}
+.view-all-link:hover{text-decoration:underline;}
+
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="nav-brand">💻 Code Editor — IPPT</div>
+    <div class="nav-right">
+        <a class="btn-back" href="codingquestions.html">← Questions</a>
+        <a class="btn-back" href="submissions.html" style="color:#3fb950;border-color:#3fb950">📋 My Submissions</a>
+        <button class="btn-run"    id="btnRun"    onclick="runCode()">▶ Run Code</button>
+        <button class="btn-submit" id="btnSubmit" onclick="submitCode()">✅ Submit</button>
+    </div>
+</div>
+
+<div class="editor-layout">
+    <!-- Problem statement -->
+    <div class="problem-panel" id="problemPanel">
+        <div style="color:#8b949e;text-align:center;padding:40px 0">Loading…</div>
+    </div>
+
+    <!-- Editor + Output -->
+    <div class="editor-area">
+        <div class="editor-toolbar">
+            <span style="font-size:13px;color:#8b949e">Language:</span>
+            <select class="lang-select" id="langSelect" onchange="onLangChange()">
+                <option value="71">Python</option>
+                <option value="62">Java</option>
+                <option value="54">C++</option>
+                <option value="51">C#</option>
+            </select>
+        </div>
+        <div id="monaco-container"></div>
+        <div class="output-panel">
+            <div class="output-header">
+                <span class="output-title">Output</span>
+                <span class="status-pill" id="statusPill" style="background:#334155">—</span>
+            </div>
+            <pre id="outputText">// Click ▶ Run Code to execute your solution</pre>
+        </div>
+    </div>
+
+    <!-- History -->
+    <div class="history-panel">
+        <h4>Recent Submissions</h4>
+        <div id="recentHistory"></div>
+        <a class="view-all-link" href="submissions.html">View All →</a>
+    </div>
+</div>
+
+<!-- Monaco loader -->
+<script>var require = { paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs" } };</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/assessment-utils.js"></script>
+<script>
+const studentId = requireStudentLogin();
+const qId       = new URLSearchParams(location.search).get("id");
+let   editor    = null;
+let   question  = null;
+
+const STARTERS = {
+    71: '# Python\ndef solution():\n    pass\n\nsolution()',
+    62: '// Java\nimport java.util.*;\npublic class Main {\n    public static void main(String[] args) {\n        // your code here\n    }\n}',
+    54: '// C++\n#include<bits/stdc++.h>\nusing namespace std;\nint main(){\n    // your code here\n    return 0;\n}',
+    51: '// C#\nusing System;\nclass Solution {\n    static void Main() {\n        // your code here\n    }\n}'
+};
+
+const LANG_NAMES = { 71: "python", 62: "java", 54: "cpp", 51: "csharp" };
+
+// ── Load question ─────────────────────────────────────────────
+async function loadQuestion() {
+    if (!qId) { document.getElementById("problemPanel").innerHTML = `<div style="color:#ef4444;padding:20px">No question selected.</div>`; return; }
+    const res = await fetch(`${API}/codingquestions/${qId}`);
+    if (!res.ok) { document.getElementById("problemPanel").innerHTML = `<div style="color:#ef4444;padding:20px">Question not found.</div>`; return; }
+    question = await res.json();
+
+    const dc = question.difficulty.toLowerCase();
+    document.getElementById("problemPanel").innerHTML = `
+        <span class="p-tag p-${dc}">${question.difficulty}</span>
+        <div class="p-title">${question.title}</div>
+
+        <div class="section-label">Problem</div>
+        <div class="p-desc">${question.description.replace(/\n/g,'<br>')}</div>
+
+        ${question.inputFormat ? `<div class="section-label">Input Format</div><div class="p-desc">${question.inputFormat}</div>` : ''}
+        ${question.outputFormat ? `<div class="section-label">Output Format</div><div class="p-desc">${question.outputFormat}</div>` : ''}
+
+        ${(question.sampleInput || question.sampleOutput) ? `
+        <div class="section-label">Example</div>
+        <div class="example-block">
+            ${question.sampleInput ? `<div class="ex-label">Input:</div><code>${question.sampleInput}</code>` : ''}
+            ${question.sampleOutput ? `<div class="ex-label" style="margin-top:8px">Output:</div><code>${question.sampleOutput}</code>` : ''}
+        </div>` : ''}`;
+
+    document.title = `${question.title} — IPPT`;
+}
+
+// ── Monaco init ───────────────────────────────────────────────
+function initMonaco() {
+    require(["vs/editor/editor.main"], () => {
+        const langId = parseInt(document.getElementById("langSelect").value);
+        editor = monaco.editor.create(document.getElementById("monaco-container"), {
+            value:           STARTERS[langId] || "",
+            language:        LANG_NAMES[langId] || "python",
+            theme:           "vs-dark",
+            fontSize:        14,
+            minimap:         { enabled: false },
+            automaticLayout: true,
+            fontFamily:      "'Fira Code','Courier New',monospace",
+            scrollBeyondLastLine: false
+        });
+    });
+}
+
+function onLangChange() {
+    if (!editor) return;
+    const langId = parseInt(document.getElementById("langSelect").value);
+    const model  = monaco.editor.createModel(STARTERS[langId] || "", LANG_NAMES[langId] || "python");
+    editor.setModel(model);
+}
+
+// ── Run ───────────────────────────────────────────────────────
+async function runCode() {
+    const code   = editor ? editor.getValue() : "";
+    const langId = parseInt(document.getElementById("langSelect").value);
+    setBusy(true);
+    setOutput("⏳ Executing…", "#f59e0b");
+
+    try {
+        const res = await fetch(`${API}/coding/run`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sourceCode: code, languageId: langId })
+        });
+        const data = await res.json();
+        setOutput(data.output || "(no output)", "#3fb950");
+        setPill("Executed", "#334155");
+    } catch (e) {
+        setOutput("Network error: " + e.message, "#ef4444");
+    }
+    setBusy(false);
+}
+
+// ── Submit ────────────────────────────────────────────────────
+async function submitCode() {
+    if (!question) return;
+    const code   = editor ? editor.getValue() : "";
+    const langId = parseInt(document.getElementById("langSelect").value);
+    const langName = document.getElementById("langSelect").options[document.getElementById("langSelect").selectedIndex].text;
+    setBusy(true);
+    setOutput("⏳ Submitting…", "#f59e0b");
+
+    try {
+        const res = await fetch(`${API}/coding/submit`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                studentId:  parseInt(studentId),
+                questionId: question.questionId,
+                language:   langName,
+                sourceCode: code,
+                languageId: langId
+            })
+        });
+        const data = await res.json();
+        setOutput(data.output || "(no output)", "#3fb950");
+        setPill(data.status, statusColor(data.status));
+        showToast(`✅ Submitted! Status: ${data.status}`, data.status === "Accepted");
+        loadRecentHistory();
+    } catch (e) {
+        setOutput("Network error: " + e.message, "#ef4444");
+    }
+    setBusy(false);
+}
+
+// ── Recent history ────────────────────────────────────────────
+async function loadRecentHistory() {
+    const res = await fetch(`${API}/coding/submissions/${studentId}`);
+    if (!res.ok) return;
+    const subs = await res.json();
+    const recent = subs.filter(s => s.questionId == qId).slice(0, 5);
+    const el = document.getElementById("recentHistory");
+    el.innerHTML = recent.length === 0
+        ? `<div style="color:#8b949e;font-size:12px">No submissions yet.</div>`
+        : recent.map(s => `
+            <div class="hist-item">
+                <div class="h-lang">${s.language}</div>
+                <div class="h-time">${fmtDateTime(s.submittedAt)}</div>
+                <span style="background:${statusColor(s.status)};color:white;padding:2px 8px;border-radius:10px;font-size:10px">${s.status}</span>
+                <div class="h-out">${s.output}</div>
+            </div>`).join("");
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+function setBusy(b) {
+    document.getElementById("btnRun").disabled    = b;
+    document.getElementById("btnSubmit").disabled = b;
+    document.getElementById("btnRun").innerHTML   = b ? '<span class="spinner"></span> Running…' : '▶ Run Code';
+}
+
+function setOutput(text, color) {
+    const el = document.getElementById("outputText");
+    el.textContent = text;
+    el.style.color = color;
+}
+
+function setPill(text, color) {
+    const el = document.getElementById("statusPill");
+    el.textContent = text;
+    el.style.background = color;
+}
+
+function statusColor(s) {
+    const m = { "Accepted": "#22c55e", "Wrong Answer": "#ef4444", "Runtime Error": "#f97316", "Time Limit Exceeded": "#8b5cf6" };
+    return m[s] || "#334155";
+}
+
+// ── Init ──────────────────────────────────────────────────────
+loadQuestion();
+initMonaco();
+loadRecentHistory();
+</script>
+</body>
+</html>

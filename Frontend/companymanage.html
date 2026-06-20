@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Companies</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f4f7fc;
+        }
+
+        .navbar {
+            background: linear-gradient(90deg, #1e293b, #374151);
+            color: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .container {
+            width: 95%;
+            margin: 30px auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .08);
+        }
+
+        .summary {
+            width: 250px;
+            margin-bottom: 20px;
+        }
+
+        .summary h2 {
+            color: #1e293b;
+        }
+
+        .summary p {
+            font-size: 35px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #1e293b;
+            color: white;
+            padding: 12px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .btn {
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .view {
+            background: #2563eb;
+        }
+
+        .delete {
+            background: #dc2626;
+        }
+
+        .back {
+            background: #475569;
+        }
+
+        .search {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h2>🏢 Manage Companies</h2>
+
+        <button class="btn back" onclick="window.location.href='admindashboard.html'">
+            Back
+        </button>
+    </div>
+
+    <div class="container">
+
+        <div class="card summary">
+            <h2>Total Companies</h2>
+            <p id="totalCompanies">0</p>
+        </div>
+
+        <input type="text" class="search" id="search" placeholder="Search Company..." onkeyup="filterCompanies()">
+
+        <div class="card">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Company Name</th>
+                        <th>Email</th>
+                        <th>Package</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="companyTableBody">
+
+                </tbody>
+
+            </table>
+
+            <div id="companyDetails" class="card" style="display:none;margin-top:20px;">
+
+                <h2>🏢 Company Details</h2>
+
+                <p>
+                    <b>Company Name:</b>
+                    <span id="dName"></span>
+                </p>
+
+                <p>
+                    <b>Email:</b>
+                    <span id="dEmail"></span>
+                </p>
+
+                <p>
+                    <b>Package:</b>
+                    <span id="dPackage"></span>
+                </p>
+
+                <p>
+                    <b>Eligibility:</b>
+                    <span id="dEligibility"></span>
+                </p>
+
+                <p>
+                    <b>Job Description:</b>
+                    <span id="dJob"></span>
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const API = "http://localhost:5000/api";
+
+        let companies = [];
+
+        async function loadCompanies() {
+
+            const response =
+                await fetch(`${API}/company`);
+
+            companies =
+                await response.json();
+
+            document.getElementById("totalCompanies")
+                .textContent = companies.length;
+
+            renderCompanies(companies);
+        }
+
+        function renderCompanies(data) {
+
+            let html = "";
+
+            data.forEach(c => {
+
+                html += `
+        <tr>
+
+            <td>${c.companyId}</td>
+
+            <td>${c.companyName}</td>
+
+            <td>${c.email}</td>
+
+            <td>${c.package}</td>
+
+            <td>
+
+                <button
+                    class="btn view"
+                    onclick="viewCompany(${c.companyId})">
+                    View
+                </button>
+
+                <button
+                    class="btn delete"
+                    onclick="deleteCompany(${c.companyId})">
+                    Delete
+                </button>
+
+            </td>
+
+        </tr>
+        `;
+            });
+
+            document.getElementById("companyTableBody")
+                .innerHTML = html;
+        }
+
+
+        async function viewCompany(id) {
+
+            const company =
+                companies.find(c => c.companyId === id);
+
+            if (!company) {
+                alert("Company not found");
+                return;
+            }
+
+            document.getElementById("dName").textContent =
+                company.companyName;
+
+            document.getElementById("dEmail").textContent =
+                company.email;
+
+            document.getElementById("dPackage").textContent =
+                company.package;
+
+            document.getElementById("dEligibility").textContent =
+                company.eligibilityCriteria || "Not Provided";
+
+            document.getElementById("dJob").textContent =
+                company.jobDescription || "Not Provided";
+
+            document.getElementById("companyDetails").style.display =
+                "block";
+        }
+        async function deleteCompany(id) {
+
+            if (!confirm("Delete Company?"))
+                return;
+
+            const response =
+                await fetch(`${API}/company/${id}`, {
+                    method: "DELETE"
+                });
+
+            alert(await response.text());
+
+            loadCompanies();
+        }
+
+        function filterCompanies() {
+
+            const keyword =
+                document.getElementById("search")
+                    .value
+                    .toLowerCase();
+
+            const filtered =
+                companies.filter(c =>
+                    c.companyName
+                        .toLowerCase()
+                        .includes(keyword));
+
+            renderCompanies(filtered);
+        }
+
+        loadCompanies();
+
+    </script>
+
+</body>
+
+</html>

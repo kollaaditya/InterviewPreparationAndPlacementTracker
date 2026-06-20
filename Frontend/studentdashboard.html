@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard — IPPT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/student.js"></script>
+    
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
+        body { background:#f1f5f9; min-height:100vh; }
+
+        .navbar {
+            background:linear-gradient(90deg,#2563eb,#7c3aed);
+            color:white; padding:0 40px;
+            display:flex; justify-content:space-between; align-items:center;
+            height:64px; position:sticky; top:0; z-index:100;
+            box-shadow:0 2px 12px rgba(37,99,235,0.3);
+        }
+        .nav-brand { font-size:20px; font-weight:700; }
+        .nav-right  { display:flex; align-items:center; gap:16px; }
+        .nav-user   { font-size:14px; opacity:0.9; }
+        .btn-logout {
+            padding:8px 18px; background:rgba(255,255,255,0.15);
+            color:white; border:1px solid rgba(255,255,255,0.35);
+            border-radius:8px; cursor:pointer; font-size:13px;
+            font-family:'Poppins',sans-serif; transition:background 0.2s;
+        }
+        .btn-logout:hover { background:rgba(255,255,255,0.3); }
+
+        .layout { display:flex; min-height:calc(100vh - 64px); }
+
+        .sidebar {
+            width:230px; background:white; padding:28px 0;
+            box-shadow:2px 0 12px rgba(0,0,0,0.06); flex-shrink:0;
+        }
+        .sidebar-item {
+            display:flex; align-items:center; gap:12px;
+            padding:13px 28px; cursor:pointer; font-size:14px;
+            font-weight:500; color:#64748b; border-left:3px solid transparent;
+            transition:all 0.2s; text-decoration:none;
+        }
+        .sidebar-item:hover  { background:#f8fafc; color:#2563eb; }
+        .sidebar-item.active { background:#eff6ff; color:#2563eb; border-left-color:#2563eb; font-weight:600; }
+        .sidebar-item .icon  { font-size:18px; }
+
+        .main { flex:1; padding:36px 40px; overflow-y:auto; }
+        .page-title { font-size:22px; font-weight:700; color:#1e293b; margin-bottom:28px; }
+
+        .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-bottom:32px; }
+        .stat-card {
+            background:white; border-radius:14px; padding:22px 24px;
+            box-shadow:0 2px 12px rgba(0,0,0,0.07); display:flex; align-items:center; gap:16px;
+        }
+        .stat-icon { font-size:32px; }
+        .stat-val  { font-size:26px; font-weight:700; color:#1e293b; line-height:1; }
+        .stat-lbl  { font-size:12px; color:#94a3b8; margin-top:3px; }
+
+        .card {
+            background:white; border-radius:16px; padding:28px;
+            box-shadow:0 2px 12px rgba(0,0,0,0.07); margin-bottom:24px;
+        }
+        .card-title {
+            font-size:16px; font-weight:600; color:#1e293b; margin-bottom:20px;
+            padding-bottom:12px; border-bottom:1px solid #f1f5f9;
+        }
+
+        .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        .form-group { display:flex; flex-direction:column; gap:6px; }
+        .form-group.full { grid-column:1/-1; }
+        .form-group label { font-size:13px; font-weight:500; color:#374151; }
+        .form-group input, .form-group textarea {
+            padding:10px 14px; border:1.5px solid #e2e8f0; border-radius:8px;
+            font-size:14px; font-family:'Poppins',sans-serif; outline:none; transition:border-color 0.2s;
+        }
+        .form-group input:focus { border-color:#2563eb; }
+        .form-group input[readonly] { background:#f8fafc; color:#64748b; }
+
+        .btn-primary {
+            padding:11px 28px; background:linear-gradient(90deg,#2563eb,#7c3aed);
+            color:white; border:none; border-radius:10px; font-size:14px;
+            font-weight:600; cursor:pointer; font-family:'Poppins',sans-serif;
+            transition:opacity 0.2s; margin-top:8px;
+        }
+        .btn-primary:hover { opacity:0.9; }
+
+        .cgpa-track { background:#e2e8f0; border-radius:50px; height:14px; overflow:hidden; margin:10px 0; }
+        .cgpa-fill  { height:100%; border-radius:50px; background:linear-gradient(90deg,#2563eb,#7c3aed); transition:width 0.8s ease; }
+        .cgpa-labels { display:flex; justify-content:space-between; font-size:12px; color:#94a3b8; }
+        .cgpa-big { font-size:56px; font-weight:800; color:#2563eb; text-align:center; line-height:1; margin:16px 0 4px; }
+        .cgpa-max { text-align:center; font-size:13px; color:#94a3b8; margin-bottom:8px; }
+
+        .skill-badge {
+            display:inline-block; padding:6px 14px; border-radius:20px;
+            background:#eff6ff; color:#2563eb; font-size:13px; font-weight:500; margin:4px;
+        }
+
+        .readiness-circle {
+            width:140px; height:140px; border-radius:50%; margin:20px auto;
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            color:white; box-shadow:0 6px 24px rgba(0,0,0,0.15); transition:background 0.5s;
+        }
+        .readiness-lbl { font-size:12px; font-weight:500; opacity:0.9; }
+        .readiness-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:20px; }
+        .readiness-item { background:#f8fafc; border-radius:12px; padding:16px; text-align:center; }
+        .readiness-item .r-icon { font-size:26px; margin-bottom:6px; }
+        .readiness-item .r-val  { font-size:20px; font-weight:700; color:#1e293b; }
+        .readiness-item .r-lbl  { font-size:12px; color:#94a3b8; }
+
+        .quick-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px; }
+        .quick-card {
+            background:white; border-radius:14px; padding:24px; text-align:center;
+            box-shadow:0 2px 12px rgba(0,0,0,0.07); cursor:pointer;
+            transition:transform 0.2s,box-shadow 0.2s; text-decoration:none; color:inherit;
+        }
+        .quick-card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,0.1); }
+        .quick-card .qc-icon { font-size:36px; margin-bottom:12px; }
+        .quick-card h3 { font-size:15px; color:#1e293b; margin-bottom:6px; }
+        .quick-card p  { font-size:12px; color:#94a3b8; }
+
+        .resume-box {
+            border:2px dashed #cbd5e1; border-radius:12px;
+            padding:28px; text-align:center; background:#f8fafc;
+        }
+        .resume-box p { color:#64748b; font-size:14px; margin-bottom:14px; }
+        #resumeLink {
+            display:none; margin-top:14px; padding:8px 20px;
+            background:#eff6ff; color:#2563eb; border-radius:8px;
+            text-decoration:none; font-size:14px; font-weight:500;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="nav-brand">🎓 IPPT — Interview Preparation & Placement Tracker</div>
+    <div class="nav-right">
+        <span class="nav-user" id="navUser"></span>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<div class="layout">
+
+    <div class="sidebar">
+        <div class="sidebar-item active" onclick="showSection('overview',this)">
+            <span class="icon">🏠</span> Overview
+        </div>
+        <div class="sidebar-item" onclick="showSection('profile',this)">
+            <span class="icon">👤</span> My Profile
+        </div>
+        <div class="sidebar-item" onclick="showSection('skills',this)">
+            <span class="icon">🛠</span> Skills
+        </div>
+        <div class="sidebar-item" onclick="showSection('cgpa',this)">
+            <span class="icon">📊</span> CGPA
+        </div>
+        <div class="sidebar-item" onclick="showSection('readiness',this)">
+            <span class="icon">🎯</span> Placement Readiness
+        </div>
+        <div class="sidebar-item" onclick="showSection('resume',this)">
+            <span class="icon">📄</span> Resume
+        </div>
+        <hr style="margin:16px 24px;border-color:#f1f5f9;">
+        <a class="sidebar-item" href="jobportal.html"><span class="icon">💼</span> Job Portal</a>
+        <hr style="margin:16px 24px;border-color:#f1f5f9;">
+        <a class="sidebar-item" href="codingquestions.html"><span class="icon">💻</span> Coding Platform</a>
+        <a class="sidebar-item" href="aptitudetest.html"><span class="icon">🧠</span> Aptitude Test</a>
+        <a class="sidebar-item" href="communicationtest.html"><span class="icon">🗣</span> Communication Test</a>
+    </div>
+
+    <div class="main">
+
+        <!-- OVERVIEW -->
+        <div id="section-overview">
+            <p class="page-title" id="welcomeMsg">Welcome!</p>
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div><div class="stat-val" id="statCGPA">—</div><div class="stat-lbl">CGPA</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🛠</div>
+                    <div><div class="stat-val" id="statSkills">—</div><div class="stat-lbl">Skills</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div><div class="stat-val" id="statReadiness">—</div><div class="stat-lbl">Readiness</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📄</div>
+                    <div><div class="stat-val" id="statResume">—</div><div class="stat-lbl">Resume</div></div>
+                </div>
+            </div>
+            <div class="quick-grid">
+                <div class="quick-card" onclick="location.href='jobportal.html'">
+                    <div class="qc-icon">💼</div><h3>Job Portal</h3><p>Browse and apply for jobs</p>
+                </div>
+                <div class="quick-card" onclick="showSection('profile',document.querySelector('[onclick*=profile]'))">
+                    <div class="qc-icon">👤</div><h3>My Profile</h3><p>Update personal information</p>
+                </div>
+                <div class="quick-card" onclick="location.href='codingquestions.html'">
+                    <div class="qc-icon">💻</div><h3>Coding Platform</h3><p>Solve real coding problems</p>
+                </div>
+                <div class="quick-card" onclick="location.href='aptitudetest.html'">
+                    <div class="qc-icon">🧠</div><h3>Aptitude Test</h3><p>Sharpen logical reasoning</p>
+                </div>
+                <div class="quick-card" onclick="location.href='communicationtest.html'">
+                    <div class="qc-icon">🗣</div><h3>Communication</h3><p>Improve verbal skills</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROFILE — unique IDs: prof-* -->
+        <div id="section-profile" style="display:none;">
+            <p class="page-title">👤 My Profile</p>
+            <div class="card">
+                <div class="card-title">Personal Information</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="prof-fullName" placeholder="Full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="prof-email" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text" id="prof-phone" placeholder="Phone number">
+                    </div>
+                    <div class="form-group">
+                        <label>College</label>
+                        <input type="text" id="prof-college" placeholder="College name">
+                    </div>
+                    <div class="form-group">
+                        <label>Branch</label>
+                        <input type="text" id="prof-branch" placeholder="E.g. Computer Science">
+                    </div>
+                    <div class="form-group">
+                        <label>CGPA (out of 10)</label>
+                        <input type="number" id="prof-cgpa" placeholder="E.g. 8.5" step="0.01" min="0" max="10">
+                    </div>
+                    <div class="form-group full">
+                        <label>Skills (comma separated)</label>
+                        <input type="text" id="prof-skills" placeholder="E.g. Java, Python, SQL, React">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="updateProfile()">💾 Save Changes</button>
+            </div>
+        </div>
+
+        <!-- SKILLS — unique ID: skills-input -->
+        <div id="section-skills" style="display:none;">
+            <p class="page-title">🛠 My Skills</p>
+            <div class="card">
+                <div class="card-title">Technical Skills</div>
+                <div id="skillBadges" style="min-height:60px;"></div>
+            </div>
+            <div class="card">
+                <div class="card-title">Update Skills</div>
+                <div class="form-group">
+                    <label>Skills (comma separated)</label>
+                    <input type="text" id="skills-input" placeholder="E.g. Java, Python, SQL, React">
+                </div>
+                <button class="btn-primary" onclick="updateSkills()">💾 Update Skills</button>
+            </div>
+        </div>
+
+        <!-- CGPA — unique ID: cgpa-input -->
+        <div id="section-cgpa" style="display:none;">
+            <p class="page-title">📊 CGPA Overview</p>
+            <div class="card" style="text-align:center;">
+                <div class="card-title">Current CGPA</div>
+                <div class="cgpa-big" id="cgpaValue">—</div>
+                <div class="cgpa-max">out of 10.0</div>
+                <div class="cgpa-track">
+                    <div class="cgpa-fill" id="cgpaBar" style="width:0%"></div>
+                </div>
+                <div class="cgpa-labels"><span>0</span><span>5</span><span>10</span></div>
+                <p style="margin-top:16px;font-size:14px;color:#64748b;" id="cgpaRemark"></p>
+            </div>
+            <div class="card">
+                <div class="card-title">Update CGPA</div>
+                <div class="form-group">
+                    <label>CGPA (0–10)</label>
+                    <input type="number" id="cgpa-input" placeholder="E.g. 8.5" step="0.01" min="0" max="10">
+                </div>
+                <button class="btn-primary" onclick="updateCGPA()">💾 Update CGPA</button>
+            </div>
+        </div>
+
+        <!-- PLACEMENT READINESS -->
+        <div id="section-readiness" style="display:none;">
+            <p class="page-title">🎯 Placement Readiness</p>
+            <div class="card" style="text-align:center;">
+                <div class="card-title">Overall Score</div>
+                <div class="readiness-circle" id="readinessScore">
+                    <div style="font-size:28px;font-weight:800">—</div>
+                    <div class="readiness-lbl">Loading...</div>
+                </div>
+                <p style="font-size:13px;color:#64748b;margin-top:8px;">Score based on CGPA (60%) + Skills count (40%)</p>
+            </div>
+            <div class="readiness-grid">
+                <div class="card readiness-item">
+                    <div class="r-icon">📊</div>
+                    <div class="r-val" id="r-cgpa">—</div>
+                    <div class="r-lbl">CGPA Score</div>
+                </div>
+                <div class="card readiness-item">
+                    <div class="r-icon">🛠</div>
+                    <div class="r-val" id="r-skills">—</div>
+                    <div class="r-lbl">Skills Count</div>
+                </div>
+                <div class="card readiness-item">
+                    <div class="r-icon">📄</div>
+                    <div class="r-val" id="r-resume">—</div>
+                    <div class="r-lbl">Resume</div>
+                </div>
+                <div class="card readiness-item">
+                    <div class="r-icon">💡</div>
+                    <div class="r-val" id="r-tip">—</div>
+                    <div class="r-lbl">Next Step</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESUME -->
+        <div id="section-resume" style="display:none;">
+            <p class="page-title">📄 Resume</p>
+            <div class="card">
+                <div class="card-title">Upload Resume</div>
+                <div class="resume-box">
+                    <p>Upload your resume (PDF, DOC, DOCX — max 5MB)</p>
+                    <input type="file" id="resumeFile" accept=".pdf,.doc,.docx">
+                    <br><br>
+                    <button class="btn-primary" onclick="uploadResume()">⬆ Upload Resume</button>
+                    <br>
+                    <a id="resumeLink" href="#" target="_blank">📄 View Resume</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/student.js"></script>
+<script>
+    const userId   = sessionStorage.getItem("userId");
+    const userName = sessionStorage.getItem("userName");
+    const userRole = sessionStorage.getItem("userRole");
+
+    if (!userId || userRole !== "Student") {
+        alert("Please login first.");
+        window.location.href = "studentlogin.html";
+    }
+
+    document.getElementById("navUser").textContent    = userName;
+    document.getElementById("welcomeMsg").textContent = `Welcome back, ${userName}! 👋`;
+
+    function showSection(name, el) {
+        document.querySelectorAll(".main > div[id^='section-']").forEach(d => d.style.display = "none");
+        document.getElementById("section-" + name).style.display = "block";
+        document.querySelectorAll(".sidebar-item").forEach(i => i.classList.remove("active"));
+        if (el) el.classList.add("active");
+    }
+
+    loadProfile();
+</script>
+</body>
+</html>

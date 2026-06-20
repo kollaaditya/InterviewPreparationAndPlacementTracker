@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Questions — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:#f4f7fc;min-height:100vh;}
+.navbar{background:linear-gradient(90deg,#1e293b,#374151);color:white;padding:0 40px;display:flex;justify-content:space-between;align-items:center;height:64px;}
+.nav-brand{font-size:18px;font-weight:700;}
+.nav-right{display:flex;gap:12px;align-items:center;}
+.btn-back{padding:7px 16px;background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2);border-radius:8px;text-decoration:none;font-size:13px;}
+.layout{display:flex;min-height:calc(100vh - 64px);}
+.sidebar{width:220px;background:white;padding:24px 0;box-shadow:2px 0 8px rgba(0,0,0,0.06);flex-shrink:0;}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:13px 24px;cursor:pointer;font-size:14px;font-weight:500;color:#64748b;border-left:3px solid transparent;transition:all 0.2s;}
+.sidebar-item:hover{background:#f8fafc;color:#1e293b;}
+.sidebar-item.active{background:#f1f5f9;color:#1e293b;border-left-color:#1e293b;font-weight:600;}
+.main{flex:1;padding:32px 40px;overflow-y:auto;}
+.section{display:none;}.section.active{display:block;}
+.page-title{font-size:20px;font-weight:700;color:#1e293b;margin-bottom:24px;}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{background:white;border-radius:12px;padding:18px 20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;align-items:center;gap:14px;}
+.stat-icon{font-size:26px;}.stat-val{font-size:22px;font-weight:700;color:#1e293b;line-height:1;}.stat-lbl{font-size:11px;color:#94a3b8;}
+
+/* Add form */
+.card{background:white;border-radius:14px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:24px;}
+.card-title{font-size:15px;font-weight:600;color:#1e293b;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid #f1f5f9;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-group.full{grid-column:1/-1;}
+.form-group label{font-size:13px;font-weight:500;color:#374151;}
+.form-group input,.form-group select,.form-group textarea{padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:'Poppins',sans-serif;outline:none;transition:border-color 0.2s;background:white;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#1e293b;}
+.form-group textarea{resize:vertical;min-height:80px;}
+.btn-add{padding:11px 28px;background:linear-gradient(90deg,#1e293b,#374151);color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;margin-top:8px;}
+.btn-add:hover{opacity:0.9;}
+
+/* Question list */
+.q-item{background:white;border-radius:12px;padding:18px 20px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;align-items:flex-start;gap:16px;}
+.q-num{width:34px;height:34px;border-radius:8px;background:#f1f5f9;color:#1e293b;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.q-body{flex:1;min-width:0;}
+.q-text{font-size:14px;font-weight:600;color:#1e293b;margin-bottom:8px;}
+.q-opts{display:flex;gap:8px;flex-wrap:wrap;}
+.opt-chip{padding:3px 10px;border-radius:6px;font-size:12px;background:#f1f5f9;color:#64748b;}
+.opt-chip.correct{background:#dcfce7;color:#166534;font-weight:600;}
+.q-meta{margin-top:6px;display:flex;gap:10px;font-size:12px;color:#94a3b8;}
+.btn-del{padding:6px 14px;background:#fee2e2;color:#ef4444;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;}
+.btn-del:hover{background:#fecaca;}
+.empty-msg{text-align:center;padding:40px;color:#94a3b8;font-size:14px;}
+.loading-msg{text-align:center;padding:40px;color:#94a3b8;}
+.diff-badge{padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;color:white;}
+.diff-Easy{background:#22c55e;}.diff-Medium{background:#f59e0b;}.diff-Hard{background:#ef4444;}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="nav-brand">⚙️ Manage Questions — IPPT Admin</div>
+    <div class="nav-right">
+        <a class="btn-back" href="admindashboard.html">← Admin Dashboard</a>
+    </div>
+</div>
+
+<div class="layout">
+    <div class="sidebar">
+        <div class="sidebar-item active" onclick="showSection('coding',this)">💻 Coding Questions</div>
+        <div class="sidebar-item" onclick="showSection('aptitude',this)">🧠 Aptitude Questions</div>
+        <div class="sidebar-item" onclick="showSection('communication',this)">🗣 Communication Qs</div>
+    </div>
+
+    <div class="main">
+
+        <!-- ── CODING ─────────────────────────────────────── -->
+        <div id="sec-coding" class="section active">
+            <div class="page-title">💻 Manage Coding Questions</div>
+            <div class="stats-row">
+                <div class="stat-card"><div class="stat-icon">🧩</div><div><div class="stat-val" id="cTotal">0</div><div class="stat-lbl">Total</div></div></div>
+                <div class="stat-card"><div class="stat-icon">🟢</div><div><div class="stat-val" id="cEasy">0</div><div class="stat-lbl">Easy</div></div></div>
+                <div class="stat-card"><div class="stat-icon">🔴</div><div><div class="stat-val" id="cHard">0</div><div class="stat-lbl">Hard</div></div></div>
+            </div>
+            <div class="card">
+                <div class="card-title">➕ Add Coding Question</div>
+                <div class="form-grid">
+                    <div class="form-group full"><label>Title</label><input id="c-title" placeholder="Question title"></div>
+                    <div class="form-group full"><label>Description</label><textarea id="c-desc" placeholder="Problem statement…"></textarea></div>
+                    <div class="form-group"><label>Input Format</label><input id="c-input" placeholder="Input format"></div>
+                    <div class="form-group"><label>Output Format</label><input id="c-output" placeholder="Output format"></div>
+                    <div class="form-group"><label>Sample Input</label><input id="c-sin" placeholder="Sample input"></div>
+                    <div class="form-group"><label>Sample Output</label><input id="c-sout" placeholder="Sample output"></div>
+                    <div class="form-group">
+                        <label>Difficulty</label>
+                        <select id="c-diff"><option>Easy</option><option>Medium</option><option>Hard</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Language</label>
+                        <select id="c-lang"><option>Any</option><option>C#</option><option>Java</option><option>Python</option><option>C++</option></select>
+                    </div>
+                </div>
+                <button class="btn-add" onclick="addCodingQ()">➕ Add Question</button>
+            </div>
+            <div class="card">
+                <div class="card-title">📋 All Coding Questions</div>
+                <div id="codingList"><div class="loading-msg">Loading…</div></div>
+            </div>
+        </div>
+
+        <!-- ── APTITUDE ───────────────────────────────────── -->
+        <div id="sec-aptitude" class="section">
+            <div class="page-title">🧠 Manage Aptitude Questions</div>
+            <div class="stats-row">
+                <div class="stat-card"><div class="stat-icon">📝</div><div><div class="stat-val" id="aTotal">0</div><div class="stat-lbl">Total</div></div></div>
+                <div class="stat-card"><div class="stat-icon">📊</div><div><div class="stat-val" id="aCats">—</div><div class="stat-lbl">Categories</div></div></div>
+                <div class="stat-card"><div class="stat-icon">🎯</div><div><div class="stat-val" id="aLast">—</div><div class="stat-lbl">Latest Category</div></div></div>
+            </div>
+            <div class="card">
+                <div class="card-title">➕ Add Aptitude Question</div>
+                <div class="form-grid">
+                    <div class="form-group full"><label>Question Text</label><textarea id="a-qtext" placeholder="Question…"></textarea></div>
+                    <div class="form-group"><label>Option A</label><input id="a-oa" placeholder="Option A"></div>
+                    <div class="form-group"><label>Option B</label><input id="a-ob" placeholder="Option B"></div>
+                    <div class="form-group"><label>Option C</label><input id="a-oc" placeholder="Option C"></div>
+                    <div class="form-group"><label>Option D</label><input id="a-od" placeholder="Option D"></div>
+                    <div class="form-group">
+                        <label>Correct Answer</label>
+                        <select id="a-ans"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="a-cat">
+                            <option>Quantitative</option><option>Reasoning</option>
+                            <option>Logical</option><option>DataInterpretation</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-add" onclick="addAptitudeQ()">➕ Add Question</button>
+            </div>
+            <div class="card">
+                <div class="card-title">📋 All Aptitude Questions</div>
+                <div id="aptitudeList"><div class="loading-msg">Loading…</div></div>
+            </div>
+        </div>
+
+        <!-- ── COMMUNICATION ──────────────────────────────── -->
+        <div id="sec-communication" class="section">
+            <div class="page-title">🗣 Manage Communication Questions</div>
+            <div class="stats-row">
+                <div class="stat-card"><div class="stat-icon">📝</div><div><div class="stat-val" id="commTotal">0</div><div class="stat-lbl">Total</div></div></div>
+                <div class="stat-card"><div class="stat-icon">📖</div><div><div class="stat-val" id="commTopics">—</div><div class="stat-lbl">Topics</div></div></div>
+                <div class="stat-card"><div class="stat-icon">🕒</div><div><div class="stat-val" id="commLast">—</div><div class="stat-lbl">Latest Topic</div></div></div>
+            </div>
+            <div class="card">
+                <div class="card-title">➕ Add Communication Question</div>
+                <div class="form-grid">
+                    <div class="form-group full"><label>Question Text</label><textarea id="comm-qtext" placeholder="Question…"></textarea></div>
+                    <div class="form-group"><label>Option A</label><input id="comm-oa" placeholder="Option A"></div>
+                    <div class="form-group"><label>Option B</label><input id="comm-ob" placeholder="Option B"></div>
+                    <div class="form-group"><label>Option C</label><input id="comm-oc" placeholder="Option C"></div>
+                    <div class="form-group"><label>Option D</label><input id="comm-od" placeholder="Option D"></div>
+                    <div class="form-group">
+                        <label>Correct Answer</label>
+                        <select id="comm-ans"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Topic</label>
+                        <select id="comm-topic">
+                            <option>Grammar</option><option>Vocabulary</option>
+                            <option>SentenceCorrection</option><option>ReadingComprehension</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-add" onclick="addCommQ()">➕ Add Question</button>
+            </div>
+            <div class="card">
+                <div class="card-title">📋 All Communication Questions</div>
+                <div id="communicationList"><div class="loading-msg">Loading…</div></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/assessment-utils.js"></script>
+<script>
+requireAdminLogin();
+
+function showSection(name, el) {
+    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".sidebar-item").forEach(i => i.classList.remove("active"));
+    document.getElementById("sec-" + name).classList.add("active");
+    el.classList.add("active");
+    if (name === "coding")        loadCodingQuestions();
+    if (name === "aptitude")      loadAptitudeQuestions();
+    if (name === "communication") loadCommQuestions();
+}
+
+function gv(id) { return document.getElementById(id)?.value || ""; }
+function sv(id, v) { const e = document.getElementById(id); if (e) e.value = v; }
+
+// ── Coding ────────────────────────────────────────────────────
+async function loadCodingQuestions() {
+    const res = await fetch(`${API}/codingquestions`);
+    const el  = document.getElementById("codingList");
+    if (!res.ok) { el.innerHTML = `<div class="empty-msg">Failed to load.</div>`; return; }
+    const qs = await res.json();
+
+    document.getElementById("cTotal").textContent = qs.length;
+    document.getElementById("cEasy").textContent  = qs.filter(q => q.difficulty === "Easy").length;
+    document.getElementById("cHard").textContent  = qs.filter(q => q.difficulty === "Hard").length;
+
+    if (qs.length === 0) { el.innerHTML = `<div class="empty-msg">No coding questions yet.</div>`; return; }
+    el.innerHTML = qs.map((q, i) => `
+        <div class="q-item">
+            <div class="q-num">${i + 1}</div>
+            <div class="q-body">
+                <div class="q-text">${q.title}</div>
+                <div class="q-meta">
+                    <span class="diff-badge diff-${q.difficulty}">${q.difficulty}</span>
+                    <span>🗣 ${q.language}</span>
+                    <span>📅 ${fmtDate(q.createdAt)}</span>
+                </div>
+            </div>
+            <button class="btn-del" onclick="deleteCodingQ(${q.questionId})">🗑 Delete</button>
+        </div>`).join("");
+}
+
+async function addCodingQ() {
+    const payload = {
+        title:        gv("c-title"), description:  gv("c-desc"),
+        inputFormat:  gv("c-input"), outputFormat: gv("c-output"),
+        sampleInput:  gv("c-sin"),   sampleOutput: gv("c-sout"),
+        difficulty:   gv("c-diff"),  language:     gv("c-lang")
+    };
+    if (!payload.title || !payload.description) { showToast("Title and description are required", false); return; }
+    const res = await fetch(`${API}/codingquestions`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
+    });
+    const msg = await res.text();
+    showToast(res.ok ? "✅ " + msg : "❌ " + msg, res.ok);
+    if (res.ok) { ["c-title","c-desc","c-input","c-output","c-sin","c-sout"].forEach(id => sv(id,"")); loadCodingQuestions(); }
+}
+
+async function deleteCodingQ(id) {
+    if (!confirm("Delete this coding question?")) return;
+    const res = await fetch(`${API}/codingquestions/${id}`, { method: "DELETE" });
+    const msg = await res.text();
+    showToast(res.ok ? "✅ " + msg : "❌ " + msg, res.ok);
+    if (res.ok) loadCodingQuestions();
+}
+
+// ── Aptitude ──────────────────────────────────────────────────
+async function loadAptitudeQuestions() {
+    const res = await fetch(`${API}/aptitudequestions/admin`);
+    const el  = document.getElementById("aptitudeList");
+    if (!res.ok) { el.innerHTML = `<div class="empty-msg">Failed to load.</div>`; return; }
+    const qs = await res.json();
+
+    document.getElementById("aTotal").textContent = qs.length;
+    const cats = [...new Set(qs.map(q => q.category))];
+    document.getElementById("aCats").textContent = cats.length;
+    document.getElementById("aLast").textContent = qs[qs.length - 1]?.category || "—";
+
+    if (qs.length === 0) { el.innerHTML = `<div class="empty-msg">No aptitude questions yet.</div>`; return; }
+    el.innerHTML = qs.map((q, i) => `
+        <div class="q-item">
+            <div class="q-num">${i + 1}</div>
+            <div class="q-body">
+                <div class="q-text">${q.questionText}</div>
+                <div class="q-opts">
+                    ${["A","B","C","D"].map(o => `<span class="opt-chip ${q.correctAnswer === o ? 'correct' : ''}">${o}. ${q["option"+o]}</span>`).join("")}
+                </div>
+                <div class="q-meta"><span>📂 ${q.category}</span></div>
+            </div>
+            <button class="btn-del" onclick="deleteAptitudeQ(${q.questionId})">🗑 Delete</button>
+        </div>`).join("");
+}
+
+async function addAptitudeQ() {
+    const payload = {
+        questionText:  gv("a-qtext"), optionA: gv("a-oa"), optionB: gv("a-ob"),
+        optionC:       gv("a-oc"),    optionD: gv("a-od"), correctAnswer: gv("a-ans"),
+        category:      gv("a-cat")
+    };
+    if (!payload.questionText || !payload.optionA || !payload.optionB || !payload.optionC || !payload.optionD) {
+        showToast("All fields are required", false); return;
+    }
+    const res = await fetch(`${API}/aptitudequestions`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
+    });
+    const msg = await res.text();
+    showToast(res.ok ? "✅ " + msg : "❌ " + msg, res.ok);
+    if (res.ok) { ["a-qtext","a-oa","a-ob","a-oc","a-od"].forEach(id => sv(id,"")); loadAptitudeQuestions(); }
+}
+
+async function deleteAptitudeQ(id) {
+    if (!confirm("Delete this aptitude question?")) return;
+    const res = await fetch(`${API}/aptitudequestions/${id}`, { method: "DELETE" });
+    const msg = await res.text();
+    showToast(res.ok ? "✅ " + msg : "❌ " + msg, res.ok);
+    if (res.ok) loadAptitudeQuestions();
+}
+
+// ── Communication ─────────────────────────────────────────────
+async function loadCommQuestions() {
+    const res = await fetch(`${API}/communicationquestions/admin`);
+    const el  = document.getElementById("communicationList");
+    if (!res.ok) { el.innerHTML = `<div class="empty-msg">Failed to load.</div>`; return; }
+    const qs = await res.json();
+
+    document.getElementById("commTotal").textContent  = qs.length;
+    const topics = [...new Set(qs.map(q => q.topic))];
+    document.getElementById("commTopics").textContent = topics.length;
+    document.getElementById("commLast").textContent   = qs[qs.length - 1]?.topic || "—";
+
+    if (qs.length === 0) { el.innerHTML = `<div class="empty-msg">No communication questions yet.</div>`; return; }
+    el.innerHTML = qs.map((q, i) => `
+        <div class="q-item">
+            <div class="q-num">${i + 1}</div>
+            <div class="q-body">
+                <div class="q-text">${q.questionText}</div>
+                <div class="q-opts">
+                    ${["A","B","C","D"].map(o => `<span class="opt-chip ${q.correctAnswer === o ? 'correct' : ''}">${o}. ${q["option"+o]}</span>`).join("")}
+                </div>
+                <div class="q-meta"><span>📂 ${q.topic}</span></div>
+            </div>
+            <button class="btn-del" onclick="deleteCommQ(${q.questionId})">🗑 Delete</button>
+        </div>`).join("");
+}
+
+async function addCommQ() {
+    const payload = {
+        questionText: gv("comm-qtext"), optionA: gv("comm-oa"), optionB: gv("comm-ob"),
+        optionC:      gv("comm-oc"),    optionD: gv("comm-od"), correctAnswer: gv("comm-ans"),
+        topic:        gv("comm-topic")
+    };
+    if (!payload.questionText || !payload.optionA || !payload.optionB || !payload.optionC || !payload.optionD) {
+        showToast("All fields are required", false); return;
+    }
+    const res = await fetch(`${API}/communicationquestions`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
+    });
+    const msg = await res.text();
+    showToast(res.ok ? "✅ " + msg : "❌ " + msg, res.ok);
+    if (res.ok) { ["comm-qtext","comm-oa","comm-ob","comm-oc","comm-od"].forEach(id => sv(id,"")); loadCommQuestions(); }
+}
+
+async function deleteCommQ(id) {
+    if (!confirm("Delete this communication question?")) return;
+    const res = await fetch(`${API}/communicationquestions/${id}`, { method: "DELETE" });
+    const msg = await res.text();
+    showToast(res.ok ? "✅ " + msg : "❌ " + msg, res.ok);
+    if (res.ok) loadCommQuestions();
+}
+
+// Init — load coding questions (default section)
+loadCodingQuestions();
+</script>
+</body>
+</html>

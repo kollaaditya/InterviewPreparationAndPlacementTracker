@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management — IPPT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f1f5f9;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(90deg, #1e293b, #374151);
+            color: white;
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-brand {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-nav {
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: 'Poppins', sans-serif;
+            border: none;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-logout {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* Container */
+        .container {
+            width: 95%;
+            max-width: 1300px;
+            margin: 36px auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        /* Summary cards */
+        .summary-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .sum-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px 22px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .sum-icon {
+            font-size: 30px;
+        }
+
+        .sum-val {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .sum-lbl {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .search-box {
+            padding: 10px 16px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            width: 320px;
+        }
+
+        .search-box:focus {
+            border-color: #2563eb;
+        }
+
+        /* Table */
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+        }
+
+        thead th {
+            color: white;
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        tbody td {
+            padding: 13px 18px;
+            font-size: 13px;
+            color: #374151;
+        }
+
+        .cgpa-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .cgpa-high {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .cgpa-mid {
+            background: #fef9c3;
+            color: #a16207;
+        }
+
+        .cgpa-low {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .action-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-view {
+            padding: 6px 14px;
+            background: #eff6ff;
+            color: #2563eb;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+        }
+
+        .btn-edit {
+            padding: 6px 14px;
+            background: #fef9c3;
+            color: #92400e;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+        }
+
+        .btn-delete {
+            padding: 6px 14px;
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+        }
+
+        .btn-view:hover {
+            background: #dbeafe;
+        }
+
+        .btn-edit:hover {
+            background: #fde68a;
+        }
+
+        .btn-delete:hover {
+            background: #fecaca;
+        }
+
+        /* Modal overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 500;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            padding: 36px;
+            width: 100%;
+            max-width: 560px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        /* Detail grid */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .detail-item label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 4px;
+        }
+
+        .detail-item span {
+            font-size: 14px;
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        .detail-item.full {
+            grid-column: 1/-1;
+        }
+
+        /* Edit form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group.full {
+            grid-column: 1/-1;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-group input {
+            padding: 10px 13px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #2563eb;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        .btn-save {
+            flex: 1;
+            padding: 11px;
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 11px;
+            background: #f1f5f9;
+            color: #374151;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-save:hover {
+            opacity: 0.9;
+        }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="nav-brand">⚙️ IPPT — Student Management</div>
+        <div class="nav-right">
+            <button class="btn-nav btn-back" onclick="location.href='admindashboard.html'">← Dashboard</button>
+            <button class="btn-nav btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+
+
+        <!-- Summary -->
+        <div class="summary-row">
+            <div class="sum-card">
+                <div class="sum-icon">👨‍🎓</div>
+                <div>
+                    <div class="sum-val" id="totalCount">0</div>
+                    <div class="sum-lbl">Total Students</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <p class="page-title">👨‍🎓 All Students</p>
+            <input class="search-box" id="searchInput" placeholder="🔍 Search by name, email, college..."
+                oninput="filterStudents()">
+        </div>
+
+        <!-- Table -->
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>College</th>
+                        <th>Branch</th>
+                        <th>CGPA</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align:center;padding:40px;color:#94a3b8;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div><!-- /container -->
+
+    <!-- ── View Modal ── -->
+    <div class="modal-overlay" id="viewModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">👤 Student Details</span>
+                <button class="modal-close" onclick="closeModal('viewModal')">✕</button>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <label>Full Name</label>
+                    <span id="detailName"></span>
+                </div>
+                <div class="detail-item">
+                    <label>Email</label>
+                    <span id="detailEmail"></span>
+                </div>
+                <div class="detail-item">
+                    <label>Phone</label>
+                    <span id="detailPhone"></span>
+                </div>
+                <div class="detail-item">
+                    <label>College</label>
+                    <span id="detailCollege"></span>
+                </div>
+                <div class="detail-item">
+                    <label>Branch</label>
+                    <span id="detailBranch"></span>
+                </div>
+                <div class="detail-item">
+                    <label>CGPA</label>
+                    <span id="detailCGPA"></span>
+                </div>
+                <div class="detail-item full">
+                    <label>Skills</label>
+                    <span id="detailSkills"></span>
+                </div>
+                <div class="detail-item full">
+                    <label>Resume</label>
+                    <span id="detailResume"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeModal('viewModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Edit Modal ── -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">✏️ Edit Student</span>
+                <button class="modal-close" onclick="closeModal('editModal')">✕</button>
+            </div>
+            <input type="hidden" id="editId">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="editName" placeholder="Full name">
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" id="editPhone" placeholder="Phone number">
+                </div>
+                <div class="form-group">
+                    <label>College</label>
+                    <input type="text" id="editCollege" placeholder="College name">
+                </div>
+                <div class="form-group">
+                    <label>Branch</label>
+                    <input type="text" id="editBranch" placeholder="Branch">
+                </div>
+                <div class="form-group">
+                    <label>CGPA</label>
+                    <input type="number" id="editCGPA" placeholder="CGPA" step="0.01" min="0" max="10">
+                </div>
+                <div class="form-group">
+                    <label>Skills</label>
+                    <input type="text" id="editSkills" placeholder="Java, Python...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeModal('editModal')">Cancel</button>
+                <button class="btn-save" onclick="saveEdit()">💾 Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/student.js"></script>
+    <script>
+        // Session guard — admin only
+        const role = sessionStorage.getItem("userRole");
+        if (!role || role !== "Admin") {
+            alert("Admin access required.");
+            window.location.href = "adminlogin.html";
+        }
+
+        // Override loadAllStudents to also fill summary cards
+        const _origLoad = loadAllStudents;
+        async function loadAllStudents() {
+            const res = await fetch(`${API}/student`);
+            if (!res.ok) return;
+
+            const students = await res.json();
+            const tbody = document.getElementById("studentTableBody");
+
+            tbody.innerHTML = students.length === 0
+                ? `<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:40px;">No students registered yet.</td></tr>`
+                : students.map(s => `
+                <tr>
+                    <td>${s.studentId}</td>
+                    <td><strong>${s.fullName}</strong></td>
+                    <td>${s.email}</td>
+                    <td>${s.college}</td>
+                    <td>${s.branch}</td>
+                    <td><span class="cgpa-badge ${cgpaClass(s.cgpa)}">${s.cgpa}</span></td>
+                    <td class="action-cell">
+                        <button class="btn-view"   onclick="viewStudent(${s.studentId})">👁 View</button>
+                        <button class="btn-edit"   onclick="openEditModal(${s.studentId})">✏️ Edit</button>
+                        <button class="btn-delete" onclick="deleteStudent(${s.studentId})">🗑 Delete</button>
+                    </td>
+                </tr>`).join("");
+
+            // Summary
+            document.getElementById("totalCount").textContent = students.length;
+            document.getElementById("highCGPA").textContent = students.filter(s => s.cgpa >= 8).length;
+            document.getElementById("withResume").textContent = students.filter(s => s.resumePath).length;
+            const avg = students.length
+                ? (students.reduce((a, s) => a + s.cgpa, 0) / students.length).toFixed(1)
+                : "—";
+            document.getElementById("avgCGPA").textContent = avg;
+        }
+
+        loadAllStudents();
+    </script>
+</body>
+
+</html>

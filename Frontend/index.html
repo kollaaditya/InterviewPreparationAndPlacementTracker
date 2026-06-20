@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interview Preparation & Placement Tracker</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#f4f7fc;
+}
+
+.navbar{
+    background:#fff;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 60px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.logo{
+    font-size:28px;
+    font-weight:700;
+    color:#2563eb;
+}
+
+.hero{
+    min-height:80vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:white;
+    text-align:center;
+    padding:40px;
+}
+
+.hero-content h1{
+    font-size:55px;
+    margin-bottom:20px;
+}
+
+.hero-content p{
+    font-size:20px;
+    margin-bottom:30px;
+}
+
+.btn{
+    padding:15px 35px;
+    border:none;
+    border-radius:10px;
+    background:white;
+    color:#2563eb;
+    font-size:18px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.section{
+    padding:80px;
+}
+
+.section-title{
+    text-align:center;
+    font-size:40px;
+    margin-bottom:50px;
+    color:#1e293b;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:25px;
+}
+
+.card{
+    background:white;
+    border-radius:20px;
+    padding:30px;
+    text-align:center;
+    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-10px);
+}
+
+.card h2{
+    margin-bottom:15px;
+}
+
+.card p{
+    margin-bottom:20px;
+    color:#555;
+}
+
+.card button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+.stats{
+    margin-top:60px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+}
+
+.stat-box{
+    background:white;
+    padding:25px;
+    text-align:center;
+    border-radius:15px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+.stat-box h1{
+    color:#2563eb;
+}
+
+.footer{
+    background:#1e293b;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+    <div class="logo">IPPT</div>
+</div>
+
+<section class="hero">
+    <div class="hero-content">
+
+
+    <h1>Interview Preparation & Placement Tracker</h1>
+
+    <p>
+        Prepare for Placements, Practice Coding,
+        Improve Aptitude Skills and Track Your Placement Readiness.
+    </p>
+
+    <button class="btn"
+    onclick="document.getElementById('portal').scrollIntoView()">
+        Get Started
+    </button>
+
+</div>
+
+
+</section>
+
+<section class="section" id="portal">
+
+<h1 class="section-title">
+Choose Your Portal
+</h1>
+
+<div class="cards">
+
+<div class="card">
+
+<h2>🎓 Student Portal</h2>
+
+<p>
+Take Coding Tests, Aptitude Tests,
+Communication Assessments and Track Progress.
+</p>
+
+<button onclick="location.href='studentregister.html'">
+Student Register
+</button>
+
+<button onclick="location.href='studentlogin.html'">
+Student Login
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>🏢 Company Portal</h2>
+
+<p>
+Create Placement Drives,
+View Eligible Students and Manage Recruitment.
+</p>
+
+<button onclick="location.href='companyregister.html'">
+Company Register
+</button>
+
+<button onclick="location.href='companylogin.html'">
+Company Login
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>⚙️ Admin Portal</h2>
+
+<p>
+Manage Students,
+Companies,
+Assessments and Analytics.
+</p>
+
+<button onclick="location.href='adminlogin.html'">
+Admin Login
+</button>
+
+</div>
+
+</div>
+
+<div class="stats">
+
+<div class="stat-box">
+<h1>500+</h1>
+<p>Students</p>
+</div>
+
+<div class="stat-box">
+<h1>100+</h1>
+<p>Companies</p>
+</div>
+
+<div class="stat-box">
+<h1>1000+</h1>
+<p>Coding Questions</p>
+</div>
+
+<div class="stat-box">
+<h1>95%</h1>
+<p>Placement Success</p>
+</div>
+
+</div>
+
+</section>
+
+<div class="footer">
+© 2026 Interview Preparation & Placement Tracker
+</div>
+
+</body>
+</html>
